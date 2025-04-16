@@ -47,14 +47,10 @@ for file_name in os.listdir(data_dir):
 
 # If everything uploaded successfully, trigger the data load procedure
 if all_successful:
-    print("All files uploaded successfully — running LOAD_RAW_DATA procedure...")
-    cur.execute("CALL LOAD_RAW_DATA();")
-    print("Data load procedure completed.")
+    print("All files uploaded successfully — running staging master task...")
+    cur.execute("EXECUTE TASK ASSESSMENT.RAW.MASTER_RAW_PIPELINE_TASK;")
+    print("Data load and deduplication procedures completed.")
 
-    # Clean up the stage after the load
-    cur.execute("REMOVE @STAGE_RAW_DATA PATTERN='.*advertiser_fee.*'")
-    cur.execute("REMOVE @STAGE_RAW_DATA PATTERN='.*lumina_plan_information3.*'")
-    cur.execute("REMOVE @STAGE_RAW_DATA PATTERN='.*vod_platform4.*'")
 else:
     print("One or more files failed to upload. Skipping data load procedure.")
 

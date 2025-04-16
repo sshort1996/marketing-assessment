@@ -1,0 +1,16 @@
+CREATE OR REPLACE TASK ASSESSMENT.RAW.MASTER_RAW_PIPELINE_TASK
+  WAREHOUSE = COMPUTE_WH
+  SCHEDULE = 'USING CRON * * * * * UTC' -- dummy schedule, we'll call it manually
+  AS
+  BEGIN
+    -- Step 1: Load staged data into raw tables
+    CALL ASSESSMENT.RAW.LOAD_RAW_DATA();
+
+    -- Step 2: Remove files from the stage
+    REMOVE @ASSESSMENT.RAW.STAGE_RAW_DATA;
+
+    -- Step 3: Deduplicate each table by its primary ID
+    CALL ASSESSMENT.TRF.DEDUPE_TO_TRF_PROC('RAW_ADVERTISER_FEE', 'ADVERTISER');
+    CALL ASSESSMENT.TRF.DEDUPE_TO_TRF_PROC('RAW_LUMINA_PLAN', 'VENDOR_ID');
+    CALL ASSESSMENT.TRF.DEDUPE_TO_TRF_PROC('RAW_VOD_PLATFORM', 'VENDOR_ID');
+  END;
