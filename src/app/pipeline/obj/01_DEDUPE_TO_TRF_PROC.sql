@@ -9,13 +9,13 @@ $$
 DECLARE
     TRF_TABLE_NAME STRING;
 BEGIN
-    -- Construct the full table names
+    -- Construct the target TRF table name
     TRF_TABLE_NAME := CONCAT('ASSESSMENT.TRF.', REPLACE(TABLE_NAME, 'RAW', 'TRF'));
     TABLE_NAME := CONCAT('ASSESSMENT.RAW.', TABLE_NAME);
 
-    -- Insert deduplicated data into the existing TRF table without replacing it
+    -- Create or replace the TRF table with deduplicated data
     EXECUTE IMMEDIATE '
-        INSERT INTO ' || TRF_TABLE_NAME || '
+        CREATE OR REPLACE TABLE ' || TRF_TABLE_NAME || ' AS
         SELECT * FROM (
             SELECT *, 
                    ROW_NUMBER() OVER (PARTITION BY ' || ID_COLUMN_NAME || ' ORDER BY ' || ID_COLUMN_NAME || ') AS RN
@@ -24,6 +24,6 @@ BEGIN
         WHERE RN = 1
     ';
 
-    RETURN 'Deduplication complete. Data inserted into: ' || TRF_TABLE_NAME;
+    RETURN 'Deduplication complete. Table created/replaced: ' || TRF_TABLE_NAME;
 END;
 $$;

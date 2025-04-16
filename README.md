@@ -78,3 +78,22 @@ Streamlit app mocked up on sample data. 4 pages, added some css into a styling l
 If the iac lib is to update only changed objects, we should publish this as a git repo and set a precommit hook to trigger the iac lib. Database objects should be stored in an 'obj' directory, and each object should have it's own file so as to isolate each component. 
 Re. orchestration, best way is probably to have a procedure for each task, and a master procedure which we trigger programatically using `snowflake-connector-python` based on our watchdog trigger. 
 
+Leaving this here, we can discuss eveything else in the demo. 
+## Usage
+Run all commands from root of project directory. 
+ - First, start the local file system trigger running, either in a background process or a 
+   separate terminal so we can monitor progress
+   ```
+   python src/watchdog/watcher.py
+   ```
+ - Build database objects in the snowflake warehouse by running 
+   ```
+   python src/app/pipeline/iac/create_objects.py
+   ```
+ - Once all objects are ready, and watchdog is running, trigger the pipeline by dropping a 
+   file into the directory `source_data`
+   ```
+    cp brief/advertiser_fee.csv source_data/advertiser_fee.csv
+    cp brief/lumina_plan_information3.csv source_data/lumina_plan_information3.csv
+    cp brief/vod_platform4.csv source_data/vod_platform4.csv
+   ```

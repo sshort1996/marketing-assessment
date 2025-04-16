@@ -25,7 +25,7 @@ st.set_page_config(
 
 style_page()
 # --- App Header ---
-st.image("assets/Core_Logo_White_CMYK.png", width=150)
+st.image("src/app/dashboard/assets/Core_Logo_White_CMYK.png", width=150)
 
 def Home():
     st.title("Marketing Analytics Dashboard")
